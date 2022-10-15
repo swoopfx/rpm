@@ -1,0 +1,10 @@
+.vagrant/
+vendor/
+config/development.config.php
+config/autoload/jwt.global.php
+config/autoload/doctrine.local.php
+CsnAuthorization/
+data/cache/*
+!data/cache/.gitkeep
+phpunit.xml
+.phpunit.result.cache
