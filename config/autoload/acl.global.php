@@ -24,8 +24,8 @@ return array(
          */
         'redirect_route' => array(
             'params' => array(
-                //'controller' => 'my_controllet',
-                //'action' => 'my_action',
+                'controller' => 'my_controllet',
+                'action' => 'my_action',
                 //'id' => '1',
             ),
             'options' => array(

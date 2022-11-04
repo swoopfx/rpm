@@ -20,8 +20,10 @@ class JWTConfigurationFactory implements FactoryInterface{
       }
 
       $config = $container->get("config");
+      $algo = new Sha256();
       $key = InMemory::base64Encoded($config["jwt"]["signKey"]);
-      $configuration = Configuration::forSymmetricSigner(new Sha256(), $key);
+      // $refeshKey = InMemory::base64Encoded($config["jwt"]["refreshKey"]);
+      $configuration = Configuration::forSymmetricSigner($algo, $key);
       $configuration->setValidationConstraints(
         new PermittedFor($config["jwt"]["url"])
       );

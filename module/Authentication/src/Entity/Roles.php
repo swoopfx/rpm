@@ -2,6 +2,7 @@
 
 namespace Authentication\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -33,18 +34,34 @@ class Roles
      */
     private $dropPage;
 
-    protected $children;
+    /**
+     * @var Array
+     * 
+     * @ORM\ManyToMany(targetEntity="Roles", cascade={"persist"})
+     * @ORM\JoinTable(name="roles_parents",
+     *      joinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="parent_id", referencedColumnName="id")}
+     *      )
+     */
+    protected $parents;
 
-    protected $permissions;
+    // protected $permissions;
 
 
-    public function getId(){
+    public function __construct()
+    {
+        $this->parents = new ArrayCollection();
+    }
+
+
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
      * Get this is the default page name to user redirect to
-     */ 
+     */
     public function getDropPage()
     {
         return $this->dropPage;
@@ -54,7 +71,7 @@ class Roles
      * Set this is the default page name to user redirect to
      *
      * @return  self
-     */ 
+     */
     public function setDropPage($dropPage)
     {
         $this->dropPage = $dropPage;
@@ -64,7 +81,7 @@ class Roles
 
     /**
      * Get the value of name
-     */ 
+     */
     public function getName()
     {
         return $this->name;
@@ -74,10 +91,34 @@ class Roles
      * Set the value of name
      *
      * @return  self
-     */ 
+     */
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of parent
+     *
+     * @return  Array
+     */
+    public function getParents()
+    {
+        return $this->parents;
+    }
+
+    /**
+     * Set the value of parent
+     *
+     * @param  Array  $parent
+     *
+     * @return  self
+     */
+    public function setParents(array $parent)
+    {
+        $this->parents = $parent;
 
         return $this;
     }

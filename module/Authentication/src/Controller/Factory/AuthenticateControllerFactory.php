@@ -26,8 +26,13 @@ class AuthenticateControllerFactory implements FactoryInterface
          * @var General\Service\GeneralService
          */
         $generalService = $container->get("General\Service\GeneralService");
+        try {
+            $rabbit = $container->get("rabbitmq.producer.login-trig");
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+        }
         
-        $ctr->setAuthenticateService($appAuthService)->setEm($generalService->getEm());
+        $ctr->setAuthenticateService($appAuthService)->setEm($generalService->getEm())->setRabbitProducer($rabbit);
         return $ctr;
     }
 }

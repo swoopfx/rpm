@@ -42,9 +42,9 @@ return [
 
     "service_manager" => [
         "factories" => [
-            "Authorization\Acl\Acl" => "Authorization\Acl\AclFactory"
+            "Authorization\Acl\Acl" => "Authorization\Acl\Factory\AclFactory"
         ],
-        "alias" => [
+        "aliases" => [
             "acl_service" => "Authorization\Acl\Acl"
         ]
     ],

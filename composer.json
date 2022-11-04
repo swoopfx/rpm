@@ -33,7 +33,8 @@
         "doctrine/migrations": "^3.5",
         "acelaya/zf2-acmailer": "^8.2",
         "laminas/laminas-permissions-acl": "^2.10",
-        "laminas/laminas-navigation": "^2.15"
+        "laminas/laminas-navigation": "^2.15",
+        "thomasvargiu/rabbitmq-module": "^4.0"
     },
     "autoload": {
         "psr-4": {

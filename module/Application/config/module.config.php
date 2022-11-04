@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Controller\ApiController;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -26,7 +27,7 @@ return [
                 'options' => [
                     'route'    => '/appi[/:action]',
                     'defaults' => [
-                        'controller' => Controller\ApiController::class,
+                        'controller' => ApiController::class ,
                         'action'     => 'index',
                     ],
                 ],
@@ -36,7 +37,7 @@ return [
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
-            Controller\ApiController::class=>InvokableFactory::class,
+            ApiController::class =>InvokableFactory::class,
         ],
     ],
     'view_manager' => [

@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Authentication;
 
+use Authentication\Controller\ApiauthenticateController;
 use Authentication\Controller\AuthenticateController;
+use Authentication\Controller\Factory\ApiauthenticateControllerFactory;
 use Authentication\Controller\Factory\AuthenticateControllerFactory;
 use Authentication\Entity\User;
 use Authentication\Form\Fieldset\UserFieldset;
 use Authentication\Form\Fieldset\Factory\UserFieldsetFactory;
+use Authentication\Form\InputFilter\Factory\RegisterInputfilterFactory;
+use Authentication\Form\InputFilter\LoginInputFilter;
+use Authentication\Form\InputFilter\RegisterInputfilter;
 use Authentication\Options\Factory\ModuleOptionsFactory;
 use Authentication\Options\ModuleOptions;
+use Authentication\Service\ApiAuthenticateService;
+use Authentication\Service\Factory\ApiAuthenticateServiceFactory;
 // use Authentication\Service\AuthenticationService as AuthService;
 use Authentication\Service\Factory\AuthenticateFactory;
 use Authentication\Service\Factory\AuthenticateServiceFactory;
@@ -26,7 +33,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 return [
     'router' => [
         'routes' => [
-            'home' => [
+            'authentication' => [
                 'type'    => Literal::class,
                 'options' => [
                     'route'    => '/',
@@ -36,13 +43,13 @@ return [
                     ],
                 ],
             ],
-            'application' => [
+            'api-auth' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route'    => '/api[/:action]',
                     'defaults' => [
-                        'controller' => AuthenticateController::class,
-                        'action'     => 'index',
+                        'controller' => ApiauthenticateController::class,
+                        'action'     => 'login',
                     ],
                 ],
             ],
@@ -50,7 +57,8 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            AuthenticateController::class => AuthenticateControllerFactory::class
+            AuthenticateController::class => AuthenticateControllerFactory::class,
+            ApiauthenticateController::class => ApiauthenticateControllerFactory::class
         ],
     ],
 
@@ -60,9 +68,11 @@ return [
             UserFieldset::class => UserFieldsetFactory::class
         ],
     ],
-    'input_filters'=>[
-        "factories"=>[
-            
+    'input_filters' => [
+
+        "factories" => [
+            RegisterInputfilter::class => RegisterInputfilterFactory::class,
+            LoginInputFilter::class => InvokableFactory::class
         ]
     ],
 
@@ -75,6 +85,7 @@ return [
             "Authentication\Service\JWTConfiguration" => JWTConfigurationFactory::class,
             "Authentication\Service\JWTIssuer" => JWTIssuerFactory::class,
             ModuleOptions::class => ModuleOptionsFactory::class,
+            ApiAuthenticateService::class => ApiAuthenticateServiceFactory::class,
 
         ],
 
@@ -124,4 +135,37 @@ return [
             )
         ]
     ],
+
+    'rabbitmq' => [
+        'producer' => [
+            'login-trig' => [
+                'connection' => 'default', // the connection name
+                'exchange' => [
+                    'type' => 'direct',
+                    'name' => 'imappv2',
+                    'durable' => true,      // (default)
+                    'auto_delete' => false, // (default)
+                    'internal' => false,    // (default)
+                    'no_wait' => false,     // (default)
+                    'declare' => true,      // (default)
+                    'arguments' => [],      // (default)
+                    'ticket' => 0,          // (default)
+                    'exchange_binds' => []  // (default)
+                ],
+                'queue' => [ // optional queue
+                    'name' => 'email-imapp', // can be an empty string,
+                    'type' => null,         // (default)
+                    'passive' => false,     // (default)
+                    'durable' => true,      // (default)
+                    'auto_delete' => false, // (default)
+                    'exclusive' => false,   // (default)
+                    'no_wait' => false,     // (default)
+                    'arguments' => [],      // (default)
+                    'ticket' => 0,          // (default)
+                    'routing_keys' => []    // (default)
+                ],
+                'auto_setup_fabric_enabled' => true // auto-setup exchanges and queues 
+            ]
+        ]
+    ]
 ];

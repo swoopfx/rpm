@@ -5,8 +5,10 @@ namespace Authorization;
 use Authorization\Acl\Acl;
 use Exception;
 use Laminas\Mvc\MvcEvent;
+use Laminas\View\Model\JsonModel;
 
-class Module {
+class Module
+{
 
     public function getConfig(): array
     {
@@ -16,13 +18,15 @@ class Module {
     }
 
 
-    public function onBootstrap(MvcEvent $e){
+    public function onBootstrap(MvcEvent $e)
+    {
         $application = $e->getApplication();
         $eventManager = $application->getEventManager();
         $eventManager->attach("route", array($this, 'onRoute'), -100);
     }
 
-    public function onRoute(MvcEvent $e){
+    public function onRoute(MvcEvent $e)
+    {
         $application = $e->getApplication();
         $routeMatch = $e->getRouteMatch();
         $sm = $application->getServiceManager(); // service Manager
@@ -45,42 +49,33 @@ class Module {
         $action = $routeMatch->getParam("action");
 
 
-        // if(!$acl->hasResource($controller)){
-        //     throw new \Exception("Resource {$controller} not found");
-        // }
+        if (!$acl->hasResource($controller)) {
+            throw new \Exception("Resource {$controller} not found");
+        }
 
-        if($acl->isAllowed($role, $controller, $action)){
+        if (!$acl->isAllowed($role, $controller, $action)) {
             $response = $e->getResponse();
             $config = $sm->get("config");
 
             $redirect_route = $config["acl"]["redirect_rou"];
-            if(!empty($redirect_route)){
+            if (!empty($redirect_route)) {
                 $url = $e->getRouter()->assemble($redirect_route["params"], $redirect_route["options"]);
                 // $response->getHeaders()->addHeaderLine("Location", $url);
                 $response->setRedirect($url, 302);
 
                 $response->setStatusCode(302);
-                // $response->sendHeaders();
-                return $response;
+                $response->sendHeaders();
+                
+                exit;
+            } else {
 
-            }else{
-
-                $response->setStatusCode(403);
-                $response->setContent('
-                    <html>
-                        <head>
-                            <title>403 Forbidden</title>
-                        </head>
-                        <body>
-                            <h1>403 Forbidden</h1>
-                        </body>
-                    </html>'
-                );
+                $response->setStatusCode(401);
+                $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+                $response->setContent(json_encode([
+                    "error" => "Unauthorized"
+                ]));
                 return $response;
             }
-
-            
         }
     }
-    
 }

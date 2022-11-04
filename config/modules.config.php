@@ -6,6 +6,8 @@
  * This should be an array of module namespaces used in the application.
  */
 return [
+    'Laminas\Mvc\Console',
+    'Laminas\Serializer',
     'Laminas\Navigation',
     'Laminas\Mail',
     'Laminas\Cache',
@@ -32,10 +34,11 @@ return [
     'DoctrineModule',
     'DoctrineORMModule',
     'AcMailer',
-
+    'Laminas\ZendFrameworkBridge',
+    'RabbitMqModule',
     'Application',
     'Authentication',
     'General',
-    // 'Authorization',
-    // 'Navigation',
+    'Authorization',
+    'Navigation',
 ];

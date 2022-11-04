@@ -12,9 +12,7 @@ class AuthenticationService{
 
     private $auth;
 
-    public function authenticate(){
-
-    }
+   
 
     const USER_ROLE_SETUP_BROKER = 3;
 
@@ -29,12 +27,19 @@ class AuthenticationService{
     const USER_ROLE_CUSTOMER = 25;
     
     
-    const USER_STATE_DISABLED = 1;
+    const USER_STATE_DISABLED = 2;
     
-    const USER_STATE_ENABLED = 2;
+    const USER_STATE_ENABLED = 1;
+
+    const USER_STATE_PENDING = 3;
 
 
     private $authenticationService;
+
+
+    public function authenticate(){
+
+    }
 
     /**
      * Static function for checking hashed password (as required by Doctrine)

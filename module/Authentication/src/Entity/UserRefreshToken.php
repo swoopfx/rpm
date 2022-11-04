@@ -1,0 +1,254 @@
+<?php
+
+namespace  Authentication\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Authentication\Entity\User;
+
+
+/**
+ * User refresh token entity
+ * 
+ * @ORM\Entity
+ * @ORM\Table(name="user_refresh_token")
+ */
+class UserRefreshToken
+{
+
+    /**
+     *
+     * @var integer 
+     * @ORM\Column(name="id", type="integer")
+     *      @ORM\Id
+     *      @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * Token Value
+     * @ORM\Column(nullable=false)
+     * @var string
+     */
+    private $refreshToken;
+
+    /**
+     * User agent requesting the data
+     * @ORM\Column(nullable=true)
+     * @var string
+     */
+    private $userAgent;
+
+    /**
+     * Users IP address
+     * @ORM\Column(nullable=false)
+     * @var string
+     */
+    private $userIp;
+
+    /**
+     * User associated with the token
+     * @ORM\ManyToOne(targetEntity="Authentication\Entity\User")
+     * @var User
+     */
+    private $userId;
+
+    /**
+     * Date token created
+     * @ORM\Column(type="datetime", nullable=false)
+     * @var \Datetime
+     */
+    private $createdOn;
+
+    /**
+     * Date time Token expires
+     * @ORM\Column(type="datetime", nullable=false)
+     * @var \Datetime
+     */
+    private $expiresOn;
+
+    /**
+     * Encrypted format of the rfresh token 
+     * @ORM\Column(type="string", nullable=false)
+     * @var string
+     */
+    private $refreshUid;
+
+
+    /**
+     * Get 
+     *
+     * @return  integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get token Value
+     *
+     * @return  string
+     */
+    public function getRefreshToken()
+    {
+        return $this->refreshToken;
+    }
+
+    /**
+     * Set token Value
+     *
+     * @param  string  $refreshToken  Token Value
+     *
+     * @return  self
+     */
+    public function setRefreshToken(string $refreshToken)
+    {
+        $this->refreshToken = $refreshToken;
+
+        return $this;
+    }
+
+    /**
+     * Get user agent requesting the data
+     *
+     * @return  string
+     */
+    public function getUserAgent()
+    {
+        return $this->userAgent;
+    }
+
+    /**
+     * Set user agent requesting the data
+     *
+     * @param  string  $userAgent  User agent requesting the data
+     *
+     * @return  self
+     */
+    public function setUserAgent(string $userAgent)
+    {
+        $this->userAgent = $userAgent;
+
+        return $this;
+    }
+
+    /**
+     * Get users IP address
+     *
+     * @return  string
+     */
+    public function getUserIp()
+    {
+        return $this->userIp;
+    }
+
+    /**
+     * Set users IP address
+     *
+     * @param  string  $userIp  Users IP address
+     *
+     * @return  self
+     */
+    public function setUserIp(string $userIp)
+    {
+        $this->userIp = $userIp;
+
+        return $this;
+    }
+
+    /**
+     * Get user associated with the token
+     *
+     * @return  User
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * Set user associated with the token
+     *
+     * @param  User  $userId  User associated with the token
+     *
+     * @return  self
+     */
+    public function setUserId(User $userId)
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * Get date token created
+     *
+     * @return  \Datetime
+     */
+    public function getCreatedOn()
+    {
+        return $this->createdOn;
+    }
+
+    /**
+     * Set date token created
+     *
+     * @param  \Datetime  $createdOn  Date token created
+     *
+     * @return  self
+     */
+    public function setCreatedOn(\Datetime $createdOn)
+    {
+        $this->createdOn = $createdOn;
+
+        return $this;
+    }
+
+    /**
+     * Get date time Token expires
+     *
+     * @return  \Datetime
+     */ 
+    public function getExpiresOn()
+    {
+        return $this->expiresOn;
+    }
+
+    /**
+     * Set date time Token expires
+     *
+     * @param  \Datetime  $expiresOn  Date time Token expires
+     *
+     * @return  self
+     */ 
+    public function setExpiresOn(\Datetime $expiresOn)
+    {
+        $this->expiresOn = $expiresOn;
+
+        return $this;
+    }
+
+    /**
+     * Get encrypted format of the rfresh token
+     *
+     * @return  string
+     */ 
+    public function getRefreshUid()
+    {
+        return $this->refreshUid;
+    }
+
+    /**
+     * Set encrypted format of the rfresh token
+     *
+     * @param  string  $refreshUid  Encrypted format of the rfresh token
+     *
+     * @return  self
+     */ 
+    public function setRefreshUid(string $refreshUid)
+    {
+        $this->refreshUid = $refreshUid;
+
+        return $this;
+    }
+}
