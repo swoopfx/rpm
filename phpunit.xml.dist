@@ -14,5 +14,13 @@
         <testsuite name="Laminas MVC Skeleton Test Suite">
             <directory>./module/*/test</directory>
         </testsuite>
+        <testsuite name="Application">
+            <directory>./module/Application/test</directory>
+        </testsuite>
+        <testsuite name="Authentication">
+            <directory>./module/Authentication/test</directory>
+        </testsuite>
     </testsuites>
+
+    
 </phpunit>
