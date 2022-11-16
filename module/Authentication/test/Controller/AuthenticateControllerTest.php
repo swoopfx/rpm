@@ -30,7 +30,7 @@ class AuthenticateControllerTest extends AbstractHttpControllerTestCase
 
     public function testIndexActionCanBeAccessed(): void
     {
-        // $this->assertTrue(TRUE);
+        $this->assertTrue(TRUE);
         // $this->dispatch('/', 'GET');
         // $this->assertResponseStatusCode(200);
         // $this->url("/");
