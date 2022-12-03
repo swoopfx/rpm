@@ -34,15 +34,29 @@ return [
     'router' => [
         'routes' => [
             'authentication' => [
-                'type'    => Literal::class,
+                'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/',
+                    'route'    => '/[:action]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        // 'id' => '[a-zA-Z0-9]*'
+                    ),
                     'defaults' => [
                         'controller' => AuthenticateController::class,
                         'action'     => 'login',
                     ],
                 ],
             ],
+            // 'loginjson' => [
+            //     'type'    => Literal::class,
+            //     'options' => [
+            //         'route'    => '/login',
+            //         'defaults' => [
+            //             'controller' => AuthenticateController::class,
+            //             'action'     => 'login',
+            //         ],
+            //     ],
+            // ],
             'api-auth' => [
                 'type'    => Segment::class,
                 'options' => [

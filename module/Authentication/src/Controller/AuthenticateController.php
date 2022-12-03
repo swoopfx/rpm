@@ -3,8 +3,10 @@
 namespace Authentication\Controller;
 
 use Authentication\Entity\User;
+use Laminas\Http\Response;
 use Laminas\InputFilter\InputFilter;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Session\SessionManager;
 use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
 
@@ -22,190 +24,170 @@ class AuthenticateController extends AbstractActionController
     public function loginAction()
     {
         $viewModel = new ViewModel();
-        $this->rabbitProducer->publish(json_encode(['foo' => 'bar']));
-      
-        // $user = $this->identity();
-        // if ($user) {
-        //     return $this->redirect()->toRoute($this->options->getLoginRedirectRoute());
-        // }
-        // $jsonModel = new JsonModel();
-        // $response = $this->getResponse();
-        // // $data = $inputFilter->getValues();
+        
+        $jsonModel = new JsonModel();
 
-        // $uri = $this->getRequest()->getUri();
-        // // var_dump($uri);
-        // $fullUrl = sprintf('%s://%s', $uri->getScheme(), $uri->getHost());
-        // // use the generated controllerr plugin for the redirection
+        $response = $this->getResponse();
+       
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $post = $request->getPost()->toArray();
+            $inputFilter = new  InputFilter();
+            $inputFilter->add(array(
+                'name' => 'phoneOrEmail',
+                'required' => true,
+                'allow_empty' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'NotEmpty',
+                        'options' => array(
+                            'messages' => array(
+                                'isEmpty' => 'Phone Number or email is required'
+                            )
+                        )
+                    )
+                )
+            ));
 
-        // // $form = $this->loginForm->createUserForm($this->userEntity, 'login');
-        // $messages = null;
-        // $request = $this->getRequest();
-        // if ($request->isPost()) {
-        //     $post = $request->getPost()->toArray();
-        //     // $inputFilter = new 
-        //     $inputFilter->add(array(
-        //         'name' => 'phoneOrEmail',
-        //         'required' => true,
-        //         'allow_empty' => false,
-        //         'filters' => array(
-        //             array(
-        //                 'name' => 'StripTags'
-        //             ),
-        //             array(
-        //                 'name' => 'StringTrim'
-        //             )
-        //         ),
-        //         'validators' => array(
-        //             array(
-        //                 'name' => 'NotEmpty',
-        //                 'options' => array(
-        //                     'messages' => array(
-        //                         'isEmpty' => 'Phone number or email is required'
-        //                     )
-        //                 )
-        //             )
-        //         )
-        //     ));
+            $inputFilter->add(array(
+                'name' => 'password',
+                'required' => true,
+                'allow_empty' => false,
+                'filters' => array(
+                    array(
+                        'name' => 'StripTags'
+                    ),
+                    array(
+                        'name' => 'StringTrim'
+                    )
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'NotEmpty',
+                        'options' => array(
+                            'messages' => array(
+                                'isEmpty' => 'Password is required'
+                            )
+                        )
+                    )
+                )
+            ));
+            $rememberme = filter_var($this->params()->fromPost('rememberme'), FILTER_VALIDATE_BOOLEAN);
+            
+            $inputFilter->setData($post);
+            if ($inputFilter->isValid()) {
+                $data = $inputFilter->getValues();
 
-        //     $inputFilter->add(array(
-        //         'name' => 'password',
-        //         'required' => true,
-        //         'allow_empty' => false,
-        //         'filters' => array(
-        //             array(
-        //                 'name' => 'StripTags'
-        //             ),
-        //             array(
-        //                 'name' => 'StringTrim'
-        //             )
-        //         ),
-        //         'validators' => array(
-        //             array(
-        //                 'name' => 'NotEmpty',
-        //                 'options' => array(
-        //                     'messages' => array(
-        //                         'isEmpty' => 'Password is required'
-        //                     )
-        //                 )
-        //             )
-        //         )
-        //     ));
+                $authService = $this->authService;
+                $adapter = $authService->getAdapter();
+                $phoneOrEmail = $data["phoneOrEmail"];
 
-        //     $inputFilter->setData($post);
-        //     if ($inputFilter->isValid()) {
-        //         $data = $inputFilter->getValues();
+                try {
+                    $user = $this->entityManager->createQuery("SELECT u FROM CsnUser\Entity\User u WHERE u.email = '$phoneOrEmail' OR u.phoneNumber = '$phoneOrEmail'")->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
 
-        //         $authService = $this->authService;
-        //         $adapter = $authService->getAdapter();
-        //         $phoneOrEmail = $data["phoneOrEmail"];
+                    // $user = $this->user->selectUserDQL($phoneOrEmail);
+                    if (count($user) == 0) {
+                        $response->setStatusCode(498);
+                        $response->setReasonPhrase('Invalid token!');
+                        return $jsonModel->setVariables([
+                            "messages" => "The username or email is not valid!"
+                        ]);
+                    } else {
+                        $user = $user[0];
+                    }
 
-        //         try {
-        //             $user = $this->entityManager->createQuery("SELECT u FROM CsnUser\Entity\User u WHERE u.email = '$phoneOrEmail' OR u.phoneNumber = '$phoneOrEmail'")->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
+                    
+                    if (!$user->getEmailConfirmed() == 1) {
+                        $messages = $this->translatorHelper->translate('You are yet to confirm your account, please go to the registered email to confirm your account');
+                        $response->setStatusCode(Response::STATUS_CODE_422);
+                        return $jsonModel->setVariables([
+                            "messages" => $messages
+                        ]);
+                    }
+                    if ($user->getState()->getId() < 2) {
+                        $messages = $this->translatorHelper->translate('Your username is disabled. Please contact an administrator.');
+                        $response->setStatusCode(Response::STATUS_CODE_422);
+                        return $jsonModel->setVariables([
+                            "messages" => $messages
+                        ]);
+                    }
 
-        //             // $user = $this->user->selectUserDQL($phoneOrEmail);
-        //             if (count($user) == 0) {
-        //                 $response->setCustomStatusCode(498);
-        //                 $response->setReasonPhrase('Invalid token!');
-        //                 return $jsonModel->setVariables([
-        //                     "messages" => "The username or email is not valid!"
-        //                 ]);
-        //             } else {
-        //                 $user = $user[0];
-        //             }
+                    $adapter->setIdentity($user->getPhoneNumber());
+                    $adapter->setCredential($data["password"]);
 
-        //             // var_dump($user);
-        //             // var_dump($user);
-        //             // if ($user == NULL) {
+                    $authResult = $authService->authenticate();
+                    // $class_methods = get_class_methods($adapter);
+                    // echo "<pre>";print_r($class_methods);exit;
 
-        //             // $messages = 'The username or email is not valid!';
-        //             // // return new ViewModel(array(
-        //             // // 'error' => $this->translatorHelper->translate('Your authentication credentials are not valid'),
-        //             // // 'form' => $form,
-        //             // // 'messages' => $messages,
-        //             // // 'navMenu' => $this->options->getNavMenu()
-        //             // // ));
+                    if ($authResult->isValid()) {
+                        $identity = $authResult->getIdentity();
+                        $authService->getStorage()->write($identity);
 
-        //             // $response->setStatusCode(Response::STATUS_CODE_422);
-        //             // return $jsonModel->setVariables([
-        //             // "messages" => $messages
-        //             // ]);
-        //             // }
-        //             if (!$user->getEmailConfirmed() == 1) {
-        //                 $messages = $this->translatorHelper->translate('You are yet to confirm your account, please go to the registered email to confirm your account');
-        //                 $response->setStatusCode(Response::STATUS_CODE_422);
-        //                 return $jsonModel->setVariables([
-        //                     "messages" => $messages
-        //                 ]);
-        //             }
-        //             if ($user->getState()->getId() < 2) {
-        //                 $messages = $this->translatorHelper->translate('Your username is disabled. Please contact an administrator.');
-        //                 $response->setStatusCode(Response::STATUS_CODE_422);
-        //                 return $jsonModel->setVariables([
-        //                     "messages" => $messages
-        //                 ]);
-        //             }
+                        // Last Login Date
+                        $this->lastLogin($this->identity());
+                        $userEntity = $this->identity();
+                        if ($rememberme) {
+                            $time = 1209600; // 14 days (1209600/3600 = 336 hours => 336/24 = 14 days)
+                            $sessionManager = new SessionManager();
+                            $sessionManager->rememberMe($time);
+                        }
 
-        //             $adapter->setIdentity($user->getPhoneNumber());
-        //             $adapter->setCredential($data["password"]);
+                        
+                        /**
+                         * At this region check if the user varible isProfiled is true
+                         * If it is true make sure continue with the login
+                         * If it is false branch into the condition get the user role mand seed it to
+                         * the userProfile Sertvice
+                         * to display the required form to fill the profile
+                         * if required redirect to the copletinfg profile Page
+                         */
+                        // $redirect = $fullUrl . "/" . UserService::routeManager($userEntity);
 
-        //             $authResult = $authService->authenticate();
-        //             // $class_methods = get_class_methods($adapter);
-        //             // echo "<pre>";print_r($class_methods);exit;
+                        $response->setStatusCode(201);
+                        $jsonModel->setVariables([
+                            "redirect" => $redirect
+                        ]);
+                        $jsonModel->setVariables([]);
+                        return $jsonModel;
+                        // return $this->redirect()->toRoute($this->options->getLoginRedirectRoute());
+                    } else {
+                        $messages = $this->translatorHelper->translate('Invalid Credentials');
+                        $response->setStatusCode(Response::STATUS_CODE_422);
+                        return $jsonModel->setVariables([
+                            "messages" => $messages
+                        ]);
+                    }
 
-        //             if ($authResult->isValid()) {
-        //                 $identity = $authResult->getIdentity();
-        //                 $authService->getStorage()->write($identity);
+                    foreach ($authResult->getMessages() as $message) {
+                        $messages .= "$message\n";
+                    }
+                } catch (\Exception $e) {
+                    // echo "Something went wrong";
+                    // return $this->errorView->createErrorView($this->translatorHelper->translate('Something went wrong during login! Please, try again later.'), $e, $this->options->getDisplayExceptions(), $this->options);
+                    // ->getNavMenu();
+                    $response->setStatusCode(Response::STATUS_CODE_400);
+                    return $jsonModel->setVariables([
+                        "messages" => $this->translatorHelper->translate('Something went wrong during login! Please, try again later.'),
+                        "data" => $e->getTrace(),
+                    ]);
+                }
+            }else{
+                $response->setStatusCode(498);
+                $response->setReasonPhrase('Invalid token!');
+                return $jsonModel->setVariables([
+                    "messages" => "The username or email is not valid!"
+                ]);
 
-        //                 // Last Login Date
-        //                 $this->lastLogin($this->identity());
-        //                 $userEntity = $this->identity();
-        //                 if ($this->params()->fromPost('rememberme')) {
-        //                     $time = 1209600; // 14 days (1209600/3600 = 336 hours => 336/24 = 14 days)
-        //                     $sessionManager = new SessionManager();
-        //                     $sessionManager->rememberMe($time);
-        //                 }
-
-        //                 // var_dump($this->identity());
-        //                 /**
-        //                  * At this region check if the user varible isProfiled is true
-        //                  * If it is true make sure continue with the login
-        //                  * If it is false branch into the condition get the user role mand seed it to
-        //                  * the userProfile Sertvice
-        //                  * to display the required form to fill the profile
-        //                  * if required redirect to the copletinfg profile Page
-        //                  */
-        //                 $redirect = $fullUrl . "/" . UserService::routeManager($userEntity);
-
-        //                 $response->setStatusCode(201);
-        //                 $jsonModel->setVariables([
-        //                     "redirect" => $redirect
-        //                 ]);
-        //                 $jsonModel->setVariables([]);
-        //                 return $jsonModel;
-        //                 // return $this->redirect()->toRoute($this->options->getLoginRedirectRoute());
-        //             } else {
-        //                 $messages = $this->translatorHelper->translate('Invalid Credentials');
-        //                 $response->setStatusCode(Response::STATUS_CODE_422);
-        //                 return $jsonModel->setVariables([
-        //                     "messages" => $messages
-        //                 ]);
-        //             }
-
-        //             foreach ($authResult->getMessages() as $message) {
-        //                 $messages .= "$message\n";
-        //             }
-        //         } catch (\Exception $e) {
-        //             // echo "Something went wrong";
-        //             // return $this->errorView->createErrorView($this->translatorHelper->translate('Something went wrong during login! Please, try again later.'), $e, $this->options->getDisplayExceptions(), $this->options);
-        //             // ->getNavMenu();
-        //             $response->setStatusCode(Response::STATUS_CODE_400);
-        //             return $jsonModel->setVariables([
-        //                 "messages" => $this->translatorHelper->translate('Something went wrong during login! Please, try again later.'),
-        //                 "data" => $e->getTrace(),
-        //             ]);
-        //         }
-        //     }
-        // }
+            }
+        }
 
         // $response->setStatusCode(Response::STATUS_CODE_500);
         // $jsonModel->setVariables([
@@ -218,7 +200,7 @@ class AuthenticateController extends AbstractActionController
 
     public function registerAction()
     {
-        // $response = $this->getResponse();
+        $response = $this->getResponse();
         // $viewModel = new ViewModel();
         // $jsonModel = new JsonModel();
         // $user = new User();
@@ -407,6 +389,7 @@ class AuthenticateController extends AbstractActionController
     public function forgotPasswordAction()
     {
         $viewModel = new ViewModel();
+        $this->layout()->setTemplate("login-layout");
         return $viewModel;
     }
 
