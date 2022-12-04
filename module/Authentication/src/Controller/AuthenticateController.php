@@ -24,11 +24,11 @@ class AuthenticateController extends AbstractActionController
     public function loginAction()
     {
         $viewModel = new ViewModel();
-        
+
         $jsonModel = new JsonModel();
 
         $response = $this->getResponse();
-       
+
         $request = $this->getRequest();
         if ($request->isPost()) {
             $post = $request->getPost()->toArray();
@@ -81,7 +81,7 @@ class AuthenticateController extends AbstractActionController
                 )
             ));
             $rememberme = filter_var($this->params()->fromPost('rememberme'), FILTER_VALIDATE_BOOLEAN);
-            
+
             $inputFilter->setData($post);
             if ($inputFilter->isValid()) {
                 $data = $inputFilter->getValues();
@@ -104,7 +104,7 @@ class AuthenticateController extends AbstractActionController
                         $user = $user[0];
                     }
 
-                    
+
                     if (!$user->getEmailConfirmed() == 1) {
                         $messages = $this->translatorHelper->translate('You are yet to confirm your account, please go to the registered email to confirm your account');
                         $response->setStatusCode(Response::STATUS_CODE_422);
@@ -140,7 +140,7 @@ class AuthenticateController extends AbstractActionController
                             $sessionManager->rememberMe($time);
                         }
 
-                        
+
                         /**
                          * At this region check if the user varible isProfiled is true
                          * If it is true make sure continue with the login
@@ -179,13 +179,12 @@ class AuthenticateController extends AbstractActionController
                         "data" => $e->getTrace(),
                     ]);
                 }
-            }else{
+            } else {
                 $response->setStatusCode(498);
                 $response->setReasonPhrase('Invalid token!');
                 return $jsonModel->setVariables([
                     "messages" => "The username or email is not valid!"
                 ]);
-
             }
         }
 
@@ -384,8 +383,11 @@ class AuthenticateController extends AbstractActionController
         // return $viewModel;
     }
 
-
-
+    /**
+     * used to reset password from a web View 
+     *
+     * @return void
+     */
     public function forgotPasswordAction()
     {
         $viewModel = new ViewModel();
@@ -479,7 +481,7 @@ class AuthenticateController extends AbstractActionController
 
     /**
      * Get the value of rabbitProducer
-     */ 
+     */
     public function getRabbitProducer()
     {
         return $this->rabbitProducer;
@@ -489,7 +491,7 @@ class AuthenticateController extends AbstractActionController
      * Set the value of rabbitProducer
      *
      * @return  self
-     */ 
+     */
     public function setRabbitProducer($rabbitProducer)
     {
         $this->rabbitProducer = $rabbitProducer;

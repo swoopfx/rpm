@@ -147,6 +147,11 @@ class ApiauthenticateController extends AbstractActionController
         return $jsonModel;
     }
 
+    public function verifyEmailAction(){
+        $jsonModel = new JsonModel();
+        return $jsonModel;
+    }
+
 
     public function forgotAction()
     {
