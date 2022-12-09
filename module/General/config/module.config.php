@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace General;
 
 use General\Service\Factory\GeneralServiceFactory;
+use General\Service\Postmark\AuthenticationEmailService;
+use General\Service\Postmark\Factory\AuthenticationEmailServiceFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -58,10 +60,14 @@ return [
     ],
     "service_manager" => [
         "factories" => [
-            "General\Service\GeneralService" => GeneralServiceFactory::class
+            "General\Service\GeneralService" => GeneralServiceFactory::class,
+
+            // Email Service
+            AuthenticationEmailService::class => AuthenticationEmailServiceFactory::class,
         ],
         "aliases" => [
             "general_service" => "General\Service\GeneralService",
+            "postmark_email_authentication_service" => AuthenticationEmailService::class
         ]
     ],
     'view_manager' => [

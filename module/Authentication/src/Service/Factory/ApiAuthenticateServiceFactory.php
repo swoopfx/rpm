@@ -18,7 +18,7 @@ class ApiAuthenticateServiceFactory implements FactoryInterface
     {
         $xserv = new ApiAuthenticateService();
         if (!$container->has("General\Service\GeneralService")) {
-            throw new InvalidArgumentException("Api Authentication Service cannot retrieve general service");
+            throw new \InvalidArgumentException("Api Authentication Service cannot retrieve general service");
         }
 
         if (!$container->has("Authentication\Service\JWTIssuer")) {

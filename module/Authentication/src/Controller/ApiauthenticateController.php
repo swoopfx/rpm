@@ -47,7 +47,7 @@ class ApiauthenticateController extends AbstractActionController
      * @OA\MediaType(
      * mediaType="application/json",
      * @OA\Schema(required={"username", "password", "userAgent", "userIp"},
-     * @OA\Property(property="phoneOrEmail", type="string", example="ezekiel_a@yahoo.com or 07089898989"),
+     * @OA\Property(property="username", type="string", example="ezekiel_a@yahoo.com or 07089898989"),
      * @OA\Property(property="password", type="string", example="Oluwaseun1"),
      * @OA\Property(property="userAgent", type="string", example="AppleWebKit/535.19 (KHTML, like Gecko)"),
      * @OA\Property(property="userIp", type="string", example="127.0.0.1"),
@@ -69,10 +69,22 @@ class ApiauthenticateController extends AbstractActionController
             $json = file_get_contents('php://input');
 
             // Converts it into a PHP object
-            $postData = json_decode($json);
-            $postData = (array) $postData;
-            $this->loginInputFilter->setData($postData);
+            $postData = json_decode($json, true);
+            // $postData = (array) $postData;
+            // $this->loginInputFilter->setData($postData);
             try {
+             // Authenticate here 
+             /**
+              * @var ApiAuthenticateService
+              */
+             $authResponse = $this->apiAuthService->setPost($postData)->authenticate();
+             $response->getHeaders()->addHeader($authResponse["cookie"]);
+             $response->setSatausCode(200);
+             $jsonModel->setVariables([
+                "success"=>true,
+                "token"=>$authResponse["token"],
+                "refresh_id"=>$authResponse["refresh_uid"]
+             ]);
 
             } catch (\Throwable $th) {
                 $jsonModel->setVariables([
@@ -80,12 +92,13 @@ class ApiauthenticateController extends AbstractActionController
                     "description" => $th->getMessage()
                 ]);
                 $response = $this->getResponse();
-                $response->setStatusCode(201);
+                $response->setStatusCode(400);
             }
         }
         $response = $this->getResponse();
-        $response->setStatusCode(200);
-        $jsonModel  = new JsonModel();
+        $response->setStatusCode(400);
+        // $jsonModel  = new JsonModel();
+        
         return $jsonModel;
     }
 
@@ -98,8 +111,8 @@ class ApiauthenticateController extends AbstractActionController
             $json = file_get_contents('php://input');
 
             // Converts it into a PHP object
-            $postData = json_decode($json);
-            $postData = (array) $postData;
+            $postData = json_decode($json, true);
+            
             try {
                 //code...
             } catch (\Throwable $th) {

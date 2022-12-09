@@ -34,7 +34,8 @@
         "acelaya/zf2-acmailer": "^8.2",
         "laminas/laminas-permissions-acl": "^2.10",
         "laminas/laminas-navigation": "^2.15",
-        "symfony/console": "^5.4"
+        "symfony/console": "^5.4",
+        "wildbit/postmark-php": "^4.0"
     },
     "autoload": {
         "psr-4": {

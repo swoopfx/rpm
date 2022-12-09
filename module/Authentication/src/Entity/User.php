@@ -22,6 +22,14 @@ class User
     private $id;
 
     /**
+     * Undocumented variable
+     *
+     * @ORM\Column(nulleble=true)
+     * @var string
+     */
+    private $fullname;
+
+    /**
      * @ORM\Column(length=30, nullable=false, unique=true)
      */
     protected $username;
@@ -429,4 +437,52 @@ class User
     }
 
    
+
+    /**
+     * Get undocumented variable
+     *
+     * @return  string
+     */ 
+    public function getFullname()
+    {
+        return $this->fullname;
+    }
+
+    /**
+     * Set undocumented variable
+     *
+     * @param  string  $fullname  Undocumented variable
+     *
+     * @return  self
+     */ 
+    public function setFullname(string $fullname)
+    {
+        $this->fullname = $fullname;
+
+        return $this;
+    }
+
+    /**
+     * Get security Question
+     *
+     * @return  string
+     */ 
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * Set security Question
+     *
+     * @param  string  $question  Security Question
+     *
+     * @return  self
+     */ 
+    public function setQuestion(string $question)
+    {
+        $this->question = $question;
+
+        return $this;
+    }
 }

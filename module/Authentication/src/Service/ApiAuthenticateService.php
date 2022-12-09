@@ -11,6 +11,7 @@ use Laminas\Http\Response;
 use Authentication\Form\InputFilter\RegisterInputfilter;
 use Authentication\Form\InputFilter\LoginInputFilter;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Laminas\Authentication\AuthenticationServiceInterface;
 use Laminas\Http\Header\SetCookie;
 use RuntimeException;
@@ -85,6 +86,8 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
 
                     return $matches[1];
+                }else{
+                    throw new Exception("Improper Bearer Config");
                 }
             }
         }
@@ -94,6 +97,9 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
     public function authenticate()
     {
         $post = $this->post;
+        if($post == NULL){
+            throw new Exception("Set Post function needs to be initiated");
+        }
         $inputFilter = $this->loginInputFilter;
 
         $inputFilter->setValidationGroup([
@@ -139,7 +145,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 $authService->getStorage()->write($identity);
 
                 // generate jwt token
-                $refresh_uid = uniqid("", true); // token to refresh the access token
+                $refresh_uid = uniqid("rt", true); // token to refresh the access token
                 $data = [];
                 $data["token"] = $this->jwtIssuer->issueToken($user->getId())->toString();
                 $data["userid"] = $user->getId();
@@ -159,6 +165,9 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 $cookie = new SetCookie(self::COOKIE_NAME);
 
                 $cookie->setValue($refreshToken);
+                $cookie->setExpires(60*60*24*30);
+                $cookie->setPath("/");
+                $cookie->setSecure(true);
                 $cookie->setHttponly(true);
                 $config = $this->jwtIssuer->getSystemConfig();
                 $cookie->setDomain($config["jwt"]["url"]);
@@ -174,6 +183,8 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
             throw new \Exception(Json::encode($inputFilter->getMessages()));
         }
     }
+
+
 
     public function hasIdentity()
     {
