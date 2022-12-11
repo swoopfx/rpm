@@ -34,7 +34,7 @@ class AuthenticateController extends AbstractActionController
             $post = $request->getPost()->toArray();
             $inputFilter = new  InputFilter();
             $inputFilter->add(array(
-                'name' => 'phoneOrEmail',
+                'name' => 'username',
                 'required' => true,
                 'allow_empty' => false,
                 'filters' => array(
@@ -200,111 +200,21 @@ class AuthenticateController extends AbstractActionController
     public function registerAction()
     {
         $response = $this->getResponse();
-        // $viewModel = new ViewModel();
-        // $jsonModel = new JsonModel();
-        // $user = new User();
-        // // $form = $this->registerForm->createUserForm($user, 'SignUp');
-        // $request = $this->getRequest();
-        // if ($request->isPost()) {
+        $viewModel = new ViewModel();
+        $request = $this->getRequest();
+        
+        if ($request->isPost()) {
+                 $post = $request->getPost()->toArray();
+                 try {
+                    //code...
+                 } catch (\Throwable $th) {
+                    //throw $th;
+                 }
+        }
 
-        //     $post = $request->getPost()->toArray();
+       
 
-        //     $inputFilter = new InputFilter();
-        //     $inputFilter->add(array(
-        //         'name' => 'phoneNumber',
-        //         'required' => true,
-        //         'allow_empty' => false,
-        //         'filters' => array(
-        //             array(
-        //                 'name' => 'StripTags'
-        //             ),
-        //             array(
-        //                 'name' => 'StringTrim'
-        //             )
-        //         ),
-        //         'validators' => array(
-        //             array(
-        //                 'name' => 'NotEmpty',
-        //                 'options' => array(
-        //                     'messages' => array(
-        //                         'isEmpty' => 'Phone number  is required'
-        //                     )
-        //                 )
-        //             )
-        //         )
-        //     ));
-
-        //     $inputFilter->add(array(
-        //         'name' => 'email',
-        //         'required' => true,
-        //         'allow_empty' => false,
-        //         'filters' => array(
-        //             array(
-        //                 'name' => 'StripTags'
-        //             ),
-        //             array(
-        //                 'name' => 'StringTrim'
-        //             )
-        //         ),
-        //         'validators' => array(
-        //             array(
-        //                 'name' => 'NotEmpty',
-        //                 'options' => array(
-        //                     'messages' => array(
-        //                         'isEmpty' => 'Email is required'
-        //                     )
-        //                 )
-        //             )
-        //         )
-        //     ));
-
-        //     $inputFilter->add(array(
-        //         'name' => 'fullname',
-        //         'required' => true,
-        //         'allow_empty' => false,
-        //         'filters' => array(
-        //             array(
-        //                 'name' => 'StripTags'
-        //             ),
-        //             array(
-        //                 'name' => 'StringTrim'
-        //             )
-        //         ),
-        //         'validators' => array(
-        //             array(
-        //                 'name' => 'NotEmpty',
-        //                 'options' => array(
-        //                     'messages' => array(
-        //                         'isEmpty' => 'Your Full Name is required'
-        //                     )
-        //                 )
-        //             )
-        //         )
-        //     ));
-
-        //     $inputFilter->add(array(
-        //         'name' => 'password',
-        //         'required' => true,
-        //         'allow_empty' => false,
-        //         'filters' => array(
-        //             array(
-        //                 'name' => 'StripTags'
-        //             ),
-        //             array(
-        //                 'name' => 'StringTrim'
-        //             )
-        //         ),
-        //         'validators' => array(
-        //             array(
-        //                 'name' => 'NotEmpty',
-        //                 'options' => array(
-        //                     'messages' => array(
-        //                         'isEmpty' => 'Password is required'
-        //                     )
-        //                 )
-        //             )
-        //         )
-        //     ));
+        
         //     // $form->setValidationGroup('username', 'email', 'password', 'passwordVerify', 'question', 'answer', 'csrf');
         //     // $post = $request->getPost()->toArray();
         //     $inputFilter->setData($post);

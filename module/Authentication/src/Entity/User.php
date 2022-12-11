@@ -24,7 +24,7 @@ class User
     /**
      * Undocumented variable
      *
-     * @ORM\Column(nulleble=true)
+     * @ORM\Column(nullable=true)
      * @var string
      */
     private $fullname;
@@ -93,7 +93,7 @@ class User
      */
     protected $emailConfirmed;
 
-
+    
 
     /**
      * @ORM\Column(name="is_profiled", type="boolean", nullable=true)
@@ -125,6 +125,8 @@ class User
      * @var string
      */
     private $uid;
+
+   
 
     /**
      * Get the value of username

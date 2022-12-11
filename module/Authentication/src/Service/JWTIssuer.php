@@ -8,6 +8,7 @@ use Authentication\Entity\UserRefreshToken;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\IdentifiedBy;
+use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\ValidAt;
 use Doctrine\ORM\EntityManager;
@@ -44,9 +45,9 @@ class JWTIssuer
         $now   = new \DateTimeImmutable();
         return  $this->config->builder()
             ->issuedBy($this->systemConfig["jwt"]["url"])
-            ->permittedFor($this->systemConfig["jwt"]["url"])
-            ->identifiedBy(bin2hex(random_bytes(16)))
-            ->relatedTo($data)->withClaim("uid", $data)
+            ->permittedFor($data["aud"])
+            ->identifiedBy($data["email"]) // device ID
+            ->relatedTo($data["email"])->withClaim("uid", $data["uid"])
             ->issuedAt($now)
             ->expiresAt($now->modify($this->systemConfig["jwt"]["expiry"]))
             ->getToken($this->config->signer(), $this->config->signingKey());
@@ -61,9 +62,9 @@ class JWTIssuer
             $expiresOn = $now->modify($this->systemConfig["jwt"]["refreshExpire"]);
             $refreshToken = $this->config->builder()
                 ->issuedBy($this->systemConfig["jwt"]["url"])
-                ->permittedFor($this->systemConfig["jwt"]["url"])
+                ->permittedFor($data["aud"])
                 ->identifiedBy(bin2hex(random_bytes(16)))
-                ->relatedTo($data)->withClaim("uid", $data)
+                ->relatedTo($data)->withClaim("uid", $data["uid"])
                 ->issuedAt($now)
                 ->expiresAt($expiresOn)
                 ->getToken($this->config->signer(), $this->config->signingKey());
@@ -103,6 +104,7 @@ class JWTIssuer
              * @var Token
              */
             $token = $config->parser()->parse($jwt);
+            
             assert($token instanceof UnencryptedToken);
 
             // var_dump($token->claims());
@@ -113,6 +115,7 @@ class JWTIssuer
             $clock = new JWTClock();
             $config->setValidationConstraints(new IssuedBy($this->systemConfig["jwt"]["url"]));
             $config->setValidationConstraints(new ValidAt($clock));
+            $config->setValidationConstraints(new PermittedFor($this->systemConfig["jwt"]["url"]));
             // $config->setValidationConstraints(new LooseValidAt($clock));
             // $config->setValidationConstraints(new Expires);
             if ($token instanceof UnencryptedToken) {

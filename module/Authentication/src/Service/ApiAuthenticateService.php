@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\Authentication\AuthenticationServiceInterface;
 use Laminas\Http\Header\SetCookie;
+use Ramsey\Uuid\Uuid;
 use RuntimeException;
 
 class ApiAuthenticateService implements AuthenticationServiceInterface
@@ -143,24 +144,31 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
             if ($authResult->isValid()) {
                 $identity = $authResult->getIdentity();
                 $authService->getStorage()->write($identity);
-
+                $uuid = Uuid::uuid4();
                 // generate jwt token
                 $refresh_uid = uniqid("rt", true); // token to refresh the access token
-                $data = [];
-                $data["token"] = $this->jwtIssuer->issueToken($user->getId())->toString();
+                $data = [
+                    "uid"=>$user->getId(),
+                    "aud"=> $uuid,
+                    "email"=>$phoneOrEmail
+                ];
+                $data["token"] = $this->jwtIssuer->issueToken($data)->toString();
                 $data["userid"] = $user->getId();
-                $data["expire"] = "";
-                $data ["uuid"] = $user->getUid();
+                $data["expire"] = ""; // fix expiry date
+                $data ["u_uid"] = $user->getUid();
                 $data["refresh_uid"] = $refresh_uid;
 
                 // Generate refresh token
                 // Store in database
-                // store in header cookie hhtponly settings
+                // store in header cookie httponly settings
                 $refreshData = [];
                 $refreshData["ip"] = $data["userIp"];
+                $refreshData = $data["aud"];
                 $refreshData["user_agent"] = $data["userAgent"];
                 $refreshData["refresh_uid"] = $refresh_uid;
+                $refreshData["uid"] = $data["uid"];
                 $refreshData["user_id"] = $user->getId();
+
                 $refreshToken = $this->jwtIssuer->generateRefreshToken($refreshData);
                 $cookie = new SetCookie(self::COOKIE_NAME);
 

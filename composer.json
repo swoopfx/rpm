@@ -35,7 +35,8 @@
         "laminas/laminas-permissions-acl": "^2.10",
         "laminas/laminas-navigation": "^2.15",
         "symfony/console": "^5.4",
-        "wildbit/postmark-php": "^4.0"
+        "wildbit/postmark-php": "^4.0",
+        "ramsey/uuid": "^4.2"
     },
     "autoload": {
         "psr-4": {

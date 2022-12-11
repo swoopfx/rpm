@@ -51,6 +51,7 @@ class ApiauthenticateController extends AbstractActionController
      * @OA\Property(property="password", type="string", example="Oluwaseun1"),
      * @OA\Property(property="userAgent", type="string", example="AppleWebKit/535.19 (KHTML, like Gecko)"),
      * @OA\Property(property="userIp", type="string", example="127.0.0.1"),
+     * 
      * )
      * ),
      * ),
@@ -83,7 +84,8 @@ class ApiauthenticateController extends AbstractActionController
              $jsonModel->setVariables([
                 "success"=>true,
                 "token"=>$authResponse["token"],
-                "refresh_id"=>$authResponse["refresh_uid"]
+                "id_token"=>$authResponse["refresh_uid"],
+                "device_id"=>$authResponse["aud"],
              ]);
 
             } catch (\Throwable $th) {
@@ -103,6 +105,29 @@ class ApiauthenticateController extends AbstractActionController
     }
 
 
+    /**
+     * Undocumented function
+     * @OA\POST( path="/api/register", tags={"Authentication"}, description="This registeres a user",
+     * @OA\RequestBody(
+     * @OA\MediaType(
+     * mediaType="application/json",
+     * @OA\Schema(required={"fullname", "username", "password", "userAgent", "userIp", "device_type"},
+     * @OA\Property(property="fullame", type="string", example="Idowu Yusuf Chukwuma"),
+     * @OA\Property(property="username", type="string", example="ezekiel_a@yahoo.com or 07089898989"),
+     * @OA\Property(property="password", type="string", example="Oluwaseun1"),
+     * @OA\Property(property="userAgent", type="string", example="AppleWebKit/535.19 (KHTML, like Gecko)"),
+     * @OA\Property(property="userIp", type="string", example="127.0.0.1"),
+     * @OA\Property(property="device_type", type="string", example="mobile or web or others"),
+     * )
+     * ),
+     * ),
+     * @OA\Response(response="200", description="Success"),
+     * @OA\Response(response="401", description="Not Authorized"),
+     * @OA\Response(response="403", description="Not permitted")
+     * )
+     *
+     * @return void
+     */
     public function registerAction()
     {
         $jsonModel = new JsonModel();

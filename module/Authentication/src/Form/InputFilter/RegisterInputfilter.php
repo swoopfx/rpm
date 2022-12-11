@@ -80,6 +80,44 @@ class RegisterInputfilter extends InputFilter
         ));
 
 
+        $this->add(array(
+            'name' => 'fullname',
+            'required' => true,
+            "allow_empty" => false,
+            'filters' => array(
+                array(
+                    'name' => 'StripTags'
+                ),
+                array(
+                    'name' => 'StringTrim'
+                )
+            ),
+            'validators' => array(
+                array(
+                    'name' => 'NotEmpty',
+                    'options' => array(
+                        'messages' => array(
+                            'isEmpty' => 'Full Name is required'
+                        )
+                    )
+                ),
+                
+                [
+                    'name' => StringLength::class,
+                    'options' => array(
+                        'messages' => array(),
+                        'min' => 6,
+                        'max' => 256,
+                        'messages' => array(
+                            StringLength::TOO_SHORT => 'Try Something more longer',
+                            StringLength::TOO_LONG => 'Could you really remember this long identity'
+                        )
+                    ),
+                ]
+            )
+        ));
+
+
         $this->add([
             'email' => array(
                 'required' => true,

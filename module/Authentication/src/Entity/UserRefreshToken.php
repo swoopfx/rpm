@@ -67,6 +67,13 @@ class UserRefreshToken
     private $expiresOn;
 
     /**
+     * UUID identifier  returned with the login response and uniquely identiies the device
+     * @ORM\Column(type="string", nullable=true)
+     * @var string
+     */
+    private $uuuid;
+
+    /**
      * Encrypted format of the rfresh token 
      * @ORM\Column(type="string", nullable=false)
      * @var string
@@ -208,7 +215,7 @@ class UserRefreshToken
      * Get date time Token expires
      *
      * @return  \Datetime
-     */ 
+     */
     public function getExpiresOn()
     {
         return $this->expiresOn;
@@ -220,7 +227,7 @@ class UserRefreshToken
      * @param  \Datetime  $expiresOn  Date time Token expires
      *
      * @return  self
-     */ 
+     */
     public function setExpiresOn(\Datetime $expiresOn)
     {
         $this->expiresOn = $expiresOn;
@@ -232,7 +239,7 @@ class UserRefreshToken
      * Get encrypted format of the rfresh token
      *
      * @return  string
-     */ 
+     */
     public function getRefreshUid()
     {
         return $this->refreshUid;
@@ -244,7 +251,7 @@ class UserRefreshToken
      * @param  string  $refreshUid  Encrypted format of the rfresh token
      *
      * @return  self
-     */ 
+     */
     public function setRefreshUid(string $refreshUid)
     {
         $this->refreshUid = $refreshUid;
