@@ -7,7 +7,6 @@
  */
 return [
     'Laminas\Navigation',
-    'Laminas\Mail',
     'Laminas\Cache',
     'Laminas\Paginator',
     'Laminas\Mvc\Plugin\FilePrg',
@@ -31,7 +30,6 @@ return [
     'Laminas\Diactoros',
     'DoctrineModule',
     'DoctrineORMModule',
-    'AcMailer',
     'Application',
     'Authentication',
     'General',

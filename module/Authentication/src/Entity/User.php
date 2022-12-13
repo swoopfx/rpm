@@ -93,7 +93,7 @@ class User
      */
     protected $emailConfirmed;
 
-    
+
 
     /**
      * @ORM\Column(name="is_profiled", type="boolean", nullable=true)
@@ -126,7 +126,14 @@ class User
      */
     private $uid;
 
-   
+    /**
+     * Unique Identifer 
+     * @ORM\Column(name="uuid", type="string", nullable=false)
+     * @var string
+     */
+    private $uuid;
+
+
 
     /**
      * Get the value of username
@@ -239,7 +246,7 @@ class User
      *
      * @return  self
      */
-    public function setState(bool $state)
+    public function setState(UserState $state)
     {
         $this->state = $state;
 
@@ -410,6 +417,7 @@ class User
     public function setCreatedOn(\DateTime $createdOn)
     {
         $this->createdOn = $createdOn;
+        $this->updatedOn = $createdOn;
 
         return $this;
     }
@@ -438,13 +446,13 @@ class User
         return $this;
     }
 
-   
+
 
     /**
      * Get undocumented variable
      *
      * @return  string
-     */ 
+     */
     public function getFullname()
     {
         return $this->fullname;
@@ -456,7 +464,7 @@ class User
      * @param  string  $fullname  Undocumented variable
      *
      * @return  self
-     */ 
+     */
     public function setFullname(string $fullname)
     {
         $this->fullname = $fullname;
@@ -468,7 +476,7 @@ class User
      * Get security Question
      *
      * @return  string
-     */ 
+     */
     public function getQuestion()
     {
         return $this->question;
@@ -480,10 +488,34 @@ class User
      * @param  string  $question  Security Question
      *
      * @return  self
-     */ 
+     */
     public function setQuestion(string $question)
     {
         $this->question = $question;
+
+        return $this;
+    }
+
+    /**
+     * Get unique Identifer
+     *
+     * @return  string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * Set unique Identifer
+     *
+     * @param  string  $uuid  Unique Identifer
+     *
+     * @return  self
+     */
+    public function setUuid(string $uuid)
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

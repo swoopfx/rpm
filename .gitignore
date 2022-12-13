@@ -3,6 +3,7 @@ vendor/
 config/development.config.php
 config/autoload/jwt.global.php
 config/autoload/doctrine.local.php
+config/*
 CsnAuthorization/
 data/cache/*
 !data/cache/.gitkeep

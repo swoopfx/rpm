@@ -71,7 +71,7 @@ class UserRefreshToken
      * @ORM\Column(type="string", nullable=true)
      * @var string
      */
-    private $uuuid;
+    private $uuid;
 
     /**
      * Encrypted format of the rfresh token 
@@ -255,6 +255,30 @@ class UserRefreshToken
     public function setRefreshUid(string $refreshUid)
     {
         $this->refreshUid = $refreshUid;
+
+        return $this;
+    }
+
+    /**
+     * Get uUID identifier returned with the login response and uniquely identiies the device
+     *
+     * @return  string
+     */ 
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * Set uUID identifier returned with the login response and uniquely identiies the device
+     *
+     * @param  string  $uuid  UUID identifier returned with the login response and uniquely identiies the device
+     *
+     * @return  self
+     */ 
+    public function setUuid(string $uuid)
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

@@ -1,34 +1,44 @@
 <?php
+
 namespace Authentication\Service;
 
 use Authentication\Entity\User;
 use Laminas\Crypt\Password\Bcrypt;
 
-class AuthenticationService{
+class AuthenticationService
+{
 
 
 
-    private $em ;
+    private $em;
 
     private $auth;
 
-   
+
 
     const USER_ROLE_SETUP_BROKER = 3;
 
     const USER_ROLE_SETUP_AGENT = 2;
+
+    // RP user role
+
+    const USER_ROLE_CUSTOMER = 100;
+
+    const USER_ROLE_DORI_HOST = 200;
+
+    // End RP User 
 
     const USER_ROLE_BROKER = 200;
 
     const USER_ROLE_BROKER_CHILD = 210;
 
     const USER_ROLE_AGENT = 100;
-    
-    const USER_ROLE_CUSTOMER = 25;
-    
-    
+
+    // const USER_ROLE_CUSTOMER = 25;
+
+
     const USER_STATE_DISABLED = 2;
-    
+
     const USER_STATE_ENABLED = 1;
 
     const USER_STATE_PENDING = 3;
@@ -37,8 +47,8 @@ class AuthenticationService{
     private $authenticationService;
 
 
-    public function authenticate(){
-
+    public function authenticate()
+    {
     }
 
     /**
@@ -73,13 +83,13 @@ class AuthenticationService{
         ));
         return $bcrypt->create($password);
     }
-    
-    
+
+
 
 
     /**
      * Get the value of authenticationService
-     */ 
+     */
     public function getAuthenticationService()
     {
         return $this->authenticationService;
@@ -89,7 +99,7 @@ class AuthenticationService{
      * Set the value of authenticationService
      *
      * @return  self
-     */ 
+     */
     public function setAuthenticationService($authenticationService)
     {
         $this->authenticationService = $authenticationService;

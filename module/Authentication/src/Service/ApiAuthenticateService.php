@@ -154,7 +154,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 ];
                 $data["token"] = $this->jwtIssuer->issueToken($data)->toString();
                 $data["userid"] = $user->getId();
-                $data["expire"] = ""; // fix expiry date
+                $data["expire"] = 1800; // fix expiry date
                 $data ["u_uid"] = $user->getUid();
                 $data["refresh_uid"] = $refresh_uid;
 
@@ -163,7 +163,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 // store in header cookie httponly settings
                 $refreshData = [];
                 $refreshData["ip"] = $data["userIp"];
-                $refreshData = $data["aud"];
+                $refreshData["data"] = $data;
                 $refreshData["user_agent"] = $data["userAgent"];
                 $refreshData["refresh_uid"] = $refresh_uid;
                 $refreshData["uid"] = $data["uid"];

@@ -14,6 +14,7 @@ use Lcobucci\JWT\Validation\Constraint\ValidAt;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\Db\Sql\Ddl\Column\Datetime;
+use Laminas\Mvc\Plugin\Identity\Identity;
 
 class JWTIssuer
 {
@@ -62,9 +63,9 @@ class JWTIssuer
             $expiresOn = $now->modify($this->systemConfig["jwt"]["refreshExpire"]);
             $refreshToken = $this->config->builder()
                 ->issuedBy($this->systemConfig["jwt"]["url"])
-                ->permittedFor($data["aud"])
-                ->identifiedBy(bin2hex(random_bytes(16)))
-                ->relatedTo($data)->withClaim("uid", $data["uid"])
+                ->permittedFor($data["data"]["aud"])
+                ->identifiedBy($data["data"]["email"])
+                ->relatedTo($data)->withClaim("uid", $data["data"]["uid"])
                 ->issuedAt($now)
                 ->expiresAt($expiresOn)
                 ->getToken($this->config->signer(), $this->config->signingKey());
@@ -77,6 +78,7 @@ class JWTIssuer
                 ->setUserAgent($data["user_agent"])
                 ->setExpiresOn(\Datetime::createFromImmutable($expiresOn))
                 ->setUserId($this->entityManager->find(User::class, $data["user_id"]))
+                ->setUuid($data["data"]["aud"])
                 ->setRefreshUid(AuthenticationService::encryptPassword($data["refresh_uid"]))
                 ->setRefreshToken($refreshToken->toString())->setUserIp($data["ip"]);
 
@@ -104,7 +106,7 @@ class JWTIssuer
              * @var Token
              */
             $token = $config->parser()->parse($jwt);
-            
+
             assert($token instanceof UnencryptedToken);
 
             // var_dump($token->claims());
@@ -115,7 +117,8 @@ class JWTIssuer
             $clock = new JWTClock();
             $config->setValidationConstraints(new IssuedBy($this->systemConfig["jwt"]["url"]));
             $config->setValidationConstraints(new ValidAt($clock));
-            $config->setValidationConstraints(new PermittedFor($this->systemConfig["jwt"]["url"]));
+            $config->setValidationConstraints(new PermittedFor($token->claims()->get("aud")));
+            
             // $config->setValidationConstraints(new LooseValidAt($clock));
             // $config->setValidationConstraints(new Expires);
             if ($token instanceof UnencryptedToken) {

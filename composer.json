@@ -31,12 +31,12 @@
         "lcobucci/jwt": "^4.2",
         "zircote/swagger-php": "^4.4",
         "doctrine/migrations": "^3.5",
-        "acelaya/zf2-acmailer": "^8.2",
         "laminas/laminas-permissions-acl": "^2.10",
         "laminas/laminas-navigation": "^2.15",
         "symfony/console": "^5.4",
         "wildbit/postmark-php": "^4.0",
-        "ramsey/uuid": "^4.2"
+        "ramsey/uuid": "^4.2",
+        "enqueue/amqp-lib": "^0.10.9"
     },
     "autoload": {
         "psr-4": {
