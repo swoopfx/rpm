@@ -68,6 +68,21 @@ class AuthenticationService
         return $bcrypt->verify($passwordGiven, $user->getPassword());
     }
 
+   /**
+    * Undocumented function
+    *
+    * @param string $systemCode
+    * @param string $inputedCode
+    * @return boolean
+    */
+    public static function verifyHashedCode($systemCode, $inputedCode): bool
+    {
+        $bcrypt = new Bcrypt([
+            "cost"=>10
+        ]);
+        return $bcrypt->verify($inputedCode, $systemCode);
+    }
+
     /**
      * Encrypt Password
      *

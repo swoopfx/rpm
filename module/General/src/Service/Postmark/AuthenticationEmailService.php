@@ -16,19 +16,28 @@ class AuthenticationEmailService implements PostmarkEmailInterface
 
     private $apiToken;
 
+    /**
+     * Sends a confirmation Email vis postmark on web UI
+     *
+     * @return void
+     */
     public function confirmEmailWeb()
     {
+        if ($this->data == null){
+            throw new \Exception("SetData must be set before calling Mail function ");
+        }
+
         $client = new PostmarkClient($this->apiToken);
         $data = $this->data;
         // Send an email:
         $sendResult = $client->sendEmailWithTemplate(
             $this->sender,
-            $data["recipient"],
+            $data["email"],
             30048183,
             [
                 "product_url" => "",
                 "product_name" => ApplicationService::APP_NAME,
-                "name" => $data["customer_name"],
+                "name" => $data["fullname"],
                 "invite_sender_name" => ApplicationService::APP_NAME,
                 "invite_sender_organization_name" => ApplicationService::APP_COMPANY_NAME,
                 "action_url" => $data["url"],
@@ -42,29 +51,37 @@ class AuthenticationEmailService implements PostmarkEmailInterface
     }
 
 
+    /**
+     * Sends a confirmation Email vis postmark on web UI
+     *
+     * @return void
+     */
     public function confirmEmailMobile()
     { 
+        if ($this->data == null){
+            throw new \Exception("SetData must be set before calling Mail function ");
+        }
 
         $client = new PostmarkClient($this->apiToken);
         $data = $this->data;
         // Send an email:
         $sendResult = $client->sendEmailWithTemplate(
             $this->sender,
-            $data["recipient"],
+            $data["email"],
             30052990,
             [
-                "product_url" => "product_url_Value",
-                "product_name" => "product_name_Value",
-                "name" => "name_Value",
-                "confirm_code" => "confirm_code_Value",
-                "help_url" => "help_url_Value",
-                "company_name" => "company_name_Value",
-                "company_address" => "company_address_Value",
-                "invite_sender_name" => "invite_sender_name_Value",
-                "invite_sender_organization_name" => "invite_sender_organization_name_Value",
-                "action_url" => "action_url_Value",
-                "support_email" => "support_email_Value",
-                "live_chat_url" => "live_chat_url_Value",
+                "product_url" => " ",
+                "product_name" => ApplicationService::APP_NAME,
+                "name" => $data["fullname"],
+                "confirm_code" => $data["code"],
+                "name" => $data["fullname"],
+                "invite_sender_name" => ApplicationService::APP_NAME,
+                "invite_sender_organization_name" => ApplicationService::APP_COMPANY_NAME,
+                "support_email" => $this->postmarkConfig["support_email"],
+                "live_chat_url" => "",
+                "help_url" => "",
+                "company_name" => ApplicationService::APP_COMPANY_NAME,
+                "company_address" => ApplicationService::APP_COMPANY_ADDRESS,
             ]
         );
     }

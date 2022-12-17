@@ -2,6 +2,7 @@
 
 namespace Authentication\Service;
 
+use General\Service\Postmark\AuthenticationEmailService;
 use Authentication\Entity\Roles;
 use Ramsey\Uuid\Uuid;
 use Authentication\Entity\User;
@@ -12,11 +13,15 @@ use Authentication\Form\InputFilter\RegisterInputfilter;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 
-use function PHPUnit\Framework\isNull;
 
 class RegisterService
 {
 
+    /**
+     * Undocumented variable
+     *
+     * @var AuthenticationEmailService;
+     */
     private $postmarkAuthMailService;
 
     /**
@@ -37,6 +42,13 @@ class RegisterService
      */
     private $registerInputFilter;
 
+    /**
+     * Undocumented variable
+     *
+     * @var Laminas\Mvc\Controller\Plugin\Url
+     */
+    private $urlPlugin;
+
     public function register()
     {
         $post = $this->post;
@@ -45,7 +57,7 @@ class RegisterService
          */
         $em = $this->generalService->getEm();
         $designatedRole = NULL;
-        if (isNull($this->assignedRole)) {
+        if (is_null($this->assignedRole)) {
             $designatedRole = AuthenticationService::USER_ROLE_CUSTOMER;
         } else {
             $designatedRole = $this->assignedRole;
@@ -69,39 +81,73 @@ class RegisterService
             $data = $this->registerInputFilter->getValues();
             $newUser = new User();
 
+            $activationToken = uniqid(mt_rand(), true);
+            $webActivationLink = $this->generateMobileCode($activationToken);
+
+            $mobileActivationCode = self::generateMobileCode();
+            $mailData = [];
+            $mailData["url"] = $webActivationLink;
+            $mailData["code"] = $mobileActivationCode;
+
             $newUser->setUsername($data["username"])
                 ->setPassword(AuthenticationService::encryptPassword($data["password"]))
                 ->setFullname($data["fullname"])->setEmail($data["email"])->setRole($em->find(Roles::class, $designatedRole))
                 ->setCreatedOn(new \Datetime())
+                ->setEmail($data["email"])
                 ->setState($em->find(UserState::class, AuthenticationService::USER_STATE_ENABLED))
                 ->setRegistrationDate(new \Datetime("now"))
                 ->setEmailConfirmed(FALSE)->setIsProfiled(FALSE)
                 ->setUid(self::createUid())
-                ->setRegistrationToken(uniqid(mt_rand(), true))
+                ->setMobileActivateCode($mobileActivationCode)
+                ->setRegistrationToken($activationToken)
                 ->setUuid(self::createUUid());
 
-                //trigger other events 
+            //trigger other events 
 
-                // send email
-                if($post["device_type"] == "mobile"){
-                    $this->mobileMailNotifer();
-                }else{
-                    $this->webMailNotifier();
-                }
+
+            // send email
+            $roleEntity = $em->find(Roles::class, $designatedRole);
+            $mailData["email"] = $data["email"];
+            $mailData["fullname"] = $data["fullname"];
+            $mailData["role"] = $roleEntity->getName();
+
+
+            if ($post["device_type"] == "mobile") {
+                $this->mobileMailNotifer($mailData);
+            } else {
+                $this->webMailNotifier($mailData);
+            }
             $em->persist($newUser);
-
+            $em->flush();
+            return $data;
         } else {
-            throw new Exception(json_encode($this->registerInputFilter->getMessages()));
+            throw new \Exception(json_encode($this->registerInputFilter->getMessages()));
         }
     }
 
 
-    private function webMailNotifier()
+    public static function generateMobileCode()
     {
+        return AuthenticationService::encryptPassword(mt_rand(100000, 999999));
     }
 
-    private function mobileMailNotifer()
+    public function generateWebActivationLink($activationCode)
     {
+        return $this->urlPlugin->fromRoute("api-auth", ["action" => "verify", "id" => $activationCode]);
+    }
+
+
+    private function webMailNotifier($data)
+    {
+        /**
+         * @var AuthenticationEmailService
+         */
+        $this->postmarkAuthMailService->setData($data)->confirmEmailWeb();
+    }
+
+    private function mobileMailNotifer($data)
+    {
+        $this->postmarkAuthMailService->setData($data)->confirmEmailMobile();
     }
 
     public static function createUUid()
@@ -192,6 +238,26 @@ class RegisterService
     public function setAssignedRole($assignedRole)
     {
         $this->assignedRole = $assignedRole;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of urlPlugin
+     */
+    public function getUrlPlugin()
+    {
+        return $this->urlPlugin;
+    }
+
+    /**
+     * Set the value of urlPlugin
+     *
+     * @return  self
+     */
+    public function setUrlPlugin($urlPlugin)
+    {
+        $this->urlPlugin = $urlPlugin;
 
         return $this;
     }

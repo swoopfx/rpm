@@ -23,7 +23,9 @@ use Authentication\Service\Factory\AuthenticateFactory;
 use Authentication\Service\Factory\AuthenticateServiceFactory;
 use Authentication\Service\Factory\JWTConfigurationFactory;
 use Authentication\Service\Factory\JWTIssuerFactory;
+use Authentication\Service\Factory\RegisterServiceFactory;
 use Authentication\Service\JWTIssuer;
+use Authentication\Service\RegisterService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Laminas\Router\Http\Literal;
@@ -60,7 +62,11 @@ return [
             'api-auth' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/api[/:action]',
+                    'route'    => '/api[/:action[/:id]]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9]*'
+                    ),
                     'defaults' => [
                         'controller' => ApiauthenticateController::class,
                         'action'     => 'login',
@@ -100,6 +106,7 @@ return [
             "Authentication\Service\JWTIssuer" => JWTIssuerFactory::class,
             ModuleOptions::class => ModuleOptionsFactory::class,
             ApiAuthenticateService::class => ApiAuthenticateServiceFactory::class,
+            RegisterService::class => RegisterServiceFactory::class,
 
         ],
 

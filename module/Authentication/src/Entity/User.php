@@ -133,6 +133,14 @@ class User
      */
     private $uuid;
 
+    /**
+     * Undocumented variable
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string
+     */
+    private $mobileActivateCode;
+
 
 
     /**
@@ -516,6 +524,30 @@ class User
     public function setUuid(string $uuid)
     {
         $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * Get undocumented variable
+     *
+     * @return  string
+     */ 
+    public function getMobileActivateCode()
+    {
+        return $this->mobileActivateCode;
+    }
+
+    /**
+     * Set undocumented variable
+     *
+     * @param  string  $mobileActivateCode  Undocumented variable
+     *
+     * @return  self
+     */ 
+    public function setMobileActivateCode(string $mobileActivateCode)
+    {
+        $this->mobileActivateCode = $mobileActivateCode;
 
         return $this;
     }

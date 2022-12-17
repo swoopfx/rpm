@@ -16,17 +16,23 @@ class RegisterServiceFactory implements FactoryInterface
     {
         $xserv = new RegisterService();
         if (!$container->has("general_service")) {
-            throw new \InvalidArgumentException("Register Service cannot retrieve general service");
+            throw new \InvalidArgumentException("Register User Service cannot retrieve general service");
         }
         if ($container->has("postmark_email_authentication_service")) {
-            throw new Exception("Register Service cannot retrieve postmart email authentication service");
+            throw new Exception("Register User Service cannot retrieve postmart email authentication service");
         }
+        if(!$container->has("ControllerPluginManager")){
+            throw new Exception("Register User Service cannot comntroler plugin Manager");
+        }
+        $controllerPluginManager = $container->get("ControllerPluginManager");
+        $urlPlugin = $controllerPluginManager->get("Url");
         $inputFilterManager = $container->get(InputFilterPluginManager::class);
         $generalService = $container->get("general_service");
         $postmarkMailService = $container->get("postmark_email_authentication_service");
         $registerInputFilter = $inputFilterManager->get(RegisterInputfilter::class);
         $xserv->setGeneralService($generalService)
             ->setPostmarkAuthMailService($postmarkMailService)
+            ->setUrlPlugin($urlPlugin)
             ->setRegisterInputFilter($registerInputFilter);
         return $xserv;
     }
