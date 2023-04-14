@@ -2,6 +2,7 @@
 
 namespace Authorization;
 
+use Authentication\Service\AuthenticationService;
 use Authorization\Acl\Acl;
 use Exception;
 use Laminas\Mvc\MvcEvent;
@@ -31,7 +32,10 @@ class Module
         $routeMatch = $e->getRouteMatch();
         $sm = $application->getServiceManager(); // service Manager
 
-        $auth = $sm->get("Laminas\Authentication\AuthenticationService");
+        /**
+         * @var AuthenticationService
+         */
+        $auth = $sm->get("authentication_service");
         /**
          * @var Acl
          */
@@ -39,6 +43,7 @@ class Module
 
         $role = Acl::DEFAULT_ROLE;
 
+        // var_dump($auth->hasIdentity());
         if ($auth->hasIdentity()) {
             $user = $auth->getIdentity();
             $role = $user->getRole()->getName();
@@ -57,17 +62,17 @@ class Module
             $response = $e->getResponse();
             $config = $sm->get("config");
 
-            $redirect_route = $config["acl"]["redirect_rou"];
-            if (!empty($redirect_route)) {
-                $url = $e->getRouter()->assemble($redirect_route["params"], $redirect_route["options"]);
-                // $response->getHeaders()->addHeaderLine("Location", $url);
-                $response->setRedirect($url, 302);
+            // $redirect_route = $config["acl"]["redirect_rou"];
+            // if (!empty($redirect_route)) {
+            //     $url = $e->getRouter()->assemble($redirect_route["params"], $redirect_route["options"]);
+            //     // $response->getHeaders()->addHeaderLine("Location", $url);
+            //     $response->setRedirect($url, 302);
 
-                $response->setStatusCode(302);
-                $response->sendHeaders();
+            //     $response->setStatusCode(302);
+            //     $response->sendHeaders();
                 
-                exit;
-            } else {
+            //     exit;
+            // } else {
 
                 $response->setStatusCode(401);
                 $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
@@ -75,7 +80,7 @@ class Module
                     "error" => "Unauthorized"
                 ]));
                 return $response;
-            }
+            // }
         }
     }
 }

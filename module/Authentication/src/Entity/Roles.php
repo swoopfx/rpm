@@ -47,6 +47,13 @@ class Roles
 
     // protected $permissions;
 
+    // /**
+    //  * Undocumented variable
+    //  * @ORM\Column(type="datetime")
+    //  * @var \Datetime
+    //  */
+    // private $updatedOn;
+
 
     public function __construct()
     {

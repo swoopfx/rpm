@@ -200,6 +200,7 @@ class AuthenticateController extends AbstractActionController
     public function registerAction()
     {
         $response = $this->getResponse();
+        $this->layout()->setTemplate("login-layout");
         $viewModel = new ViewModel();
         $request = $this->getRequest();
         
