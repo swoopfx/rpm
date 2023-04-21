@@ -9,10 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="dori_host")
  */
 
-class Customer
-{
+class DoriHost {
 
-    /**
+     /**
      *
      * @var integer @ORM\Column(name="id", type="integer")
      *      @ORM\Id
@@ -20,11 +19,7 @@ class Customer
      */
     private $id;
 
-    private $customerUid;
-
-    private $customerUuid;
-
-    private $isActive;
+    private $customer;
 
     private $createdOn;
 

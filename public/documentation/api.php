@@ -5,6 +5,7 @@ require ("../../vendor/autoload.php");
 $openapi = Generator::scan([
     '../../module/Application/src/Controller',
     '../../module/Authentication/src/Controller',
+    '../../module/Customer/src/Controller',
    
 ]);
 // $openapi = \OpenApi\Generator::scan();

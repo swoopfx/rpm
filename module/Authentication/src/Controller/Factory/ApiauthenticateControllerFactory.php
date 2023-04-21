@@ -20,7 +20,7 @@ class ApiauthenticateControllerFactory implements FactoryInterface
             throw new \InvalidArgumentException("Api Authetication Service cannot be retrieved at Api authentication controller");
         }
         if (!$container->has("general_service")) {
-            throw new \InvalidArgumentException("Api Authetication Service cannot be retrieved at Api authentication controller");
+            throw new \InvalidArgumentException("General Service cannot be retrieved at Api authentication controller");
         }
         if (!$container->has(RegisterService::class)) {
             throw new  \Exception("API Authservice Factory cannot retirve RegisterService::class");

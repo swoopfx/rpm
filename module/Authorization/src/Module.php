@@ -28,59 +28,59 @@ class Module
 
     public function onRoute(MvcEvent $e)
     {
-        $application = $e->getApplication();
-        $routeMatch = $e->getRouteMatch();
-        $sm = $application->getServiceManager(); // service Manager
+        // $application = $e->getApplication();
+        // $routeMatch = $e->getRouteMatch();
+        // $sm = $application->getServiceManager(); // service Manager
 
-        /**
-         * @var AuthenticationService
-         */
-        $auth = $sm->get("authentication_service");
-        /**
-         * @var Acl
-         */
-        $acl = $sm->get("Authorization\Acl\Acl");
+        // /**
+        //  * @var AuthenticationService
+        //  */
+        // $auth = $sm->get("authentication_service");
+        // /**
+        //  * @var Acl
+        //  */
+        // $acl = $sm->get("Authorization\Acl\Acl");
 
-        $role = Acl::DEFAULT_ROLE;
+        // $role = Acl::DEFAULT_ROLE;
 
-        // var_dump($auth->hasIdentity());
-        if ($auth->hasIdentity()) {
-            $user = $auth->getIdentity();
-            $role = $user->getRole()->getName();
-        }
-
-
-        $controller = $routeMatch->getParam("controller");
-        $action = $routeMatch->getParam("action");
+        // // var_dump($auth->hasIdentity());
+        // if ($auth->hasIdentity()) {
+        //     $user = $auth->getIdentity();
+        //     $role = $user->getRole()->getName();
+        // }
 
 
-        if (!$acl->hasResource($controller)) {
-            throw new \Exception("Resource {$controller} not found");
-        }
+        // $controller = $routeMatch->getParam("controller");
+        // $action = $routeMatch->getParam("action");
 
-        if (!$acl->isAllowed($role, $controller, $action)) {
-            $response = $e->getResponse();
-            $config = $sm->get("config");
 
-            // $redirect_route = $config["acl"]["redirect_rou"];
-            // if (!empty($redirect_route)) {
-            //     $url = $e->getRouter()->assemble($redirect_route["params"], $redirect_route["options"]);
-            //     // $response->getHeaders()->addHeaderLine("Location", $url);
-            //     $response->setRedirect($url, 302);
+        // if (!$acl->hasResource($controller)) {
+        //     throw new \Exception("Resource {$controller} not found");
+        // }
 
-            //     $response->setStatusCode(302);
-            //     $response->sendHeaders();
+        // if (!$acl->isAllowed($role, $controller, $action)) {
+        //     $response = $e->getResponse();
+        //     $config = $sm->get("config");
+
+        //     // $redirect_route = $config["acl"]["redirect_rou"];
+        //     // if (!empty($redirect_route)) {
+        //     //     $url = $e->getRouter()->assemble($redirect_route["params"], $redirect_route["options"]);
+        //     //     // $response->getHeaders()->addHeaderLine("Location", $url);
+        //     //     $response->setRedirect($url, 302);
+
+        //     //     $response->setStatusCode(302);
+        //     //     $response->sendHeaders();
                 
-            //     exit;
-            // } else {
+        //     //     exit;
+        //     // } else {
 
-                $response->setStatusCode(401);
-                $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
-                $response->setContent(json_encode([
-                    "error" => "Unauthorized"
-                ]));
-                return $response;
-            // }
-        }
+        //         $response->setStatusCode(401);
+        //         $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        //         $response->setContent(json_encode([
+        //             "error" => "Unauthorized"
+        //         ]));
+        //         return $response;
+        //     // }
+        // }
     }
 }

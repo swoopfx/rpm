@@ -36,7 +36,11 @@
         "symfony/console": "^5.4",
         "wildbit/postmark-php": "^4.0",
         "ramsey/uuid": "^4.2",
-        "enqueue/amqp-lib": "^0.10.9"
+        "enqueue/amqp-lib": "^0.10.9",
+        "sendgrid/sendgrid": "^8.0",
+        "acelaya/acmailer": "^8.2",
+        "laminas/laminas-mime": "^2.10",
+        "aws/aws-sdk-php": "^3.263"
     },
     "autoload": {
         "psr-4": {
@@ -45,7 +49,8 @@
             "General\\": "module/General/src/",
             "Authentication\\": "module/Authentication/src/",
             "Authorization\\":"module/Authorization/src",
-            "Navigation\\":"module/Navigation/src"
+            "Navigation\\":"module/Navigation/src",
+            "Customer\\":"module/Customer/src"
         }
     },
     "autoload-dev": {
