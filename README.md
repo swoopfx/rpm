@@ -1,4 +1,4 @@
-# IMV2 laminas Base Application for IMAPP
+# RPM 1.0 Recycle Point Back Application
 
 > ## 🇷🇺 Русским гражданам
 > 
