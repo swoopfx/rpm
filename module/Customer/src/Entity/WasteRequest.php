@@ -3,6 +3,7 @@
 namespace Customer\Entity;
 
 use General\Entity\WasteRequestType;
+use General\Entity\WasteType;
 
 class WasteRequest
 {
@@ -18,8 +19,8 @@ class WasteRequest
 
     /**
      * Paper, Metal, Plastics , Compost
-     *
-     * @var 
+     * @ORM\ManyToOne(targetEntity="General\Entity\WasteType")
+     * @var WasteType
      */
     private $wasteType;
 
