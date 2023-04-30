@@ -26,7 +26,7 @@ class UserRefreshToken
 
     /**
      * Token Value
-     * @ORM\Column(nullable=false)
+     * @ORM\Column(type="text", nullable=false)
      * @var string
      */
     private $refreshToken;
@@ -37,6 +37,13 @@ class UserRefreshToken
      * @var string
      */
     private $userAgent;
+
+    /**
+     * Refresh Identifier, used in comnbination with the userAgent to Regenerate the accessToken
+     * @ORM\Column(nullable=false)
+     * @var string
+     */
+    private $refreshId;
 
     /**
      * Users IP address
@@ -263,7 +270,7 @@ class UserRefreshToken
      * Get uUID identifier returned with the login response and uniquely identiies the device
      *
      * @return  string
-     */ 
+     */
     public function getUuid()
     {
         return $this->uuid;
@@ -275,7 +282,7 @@ class UserRefreshToken
      * @param  string  $uuid  UUID identifier returned with the login response and uniquely identiies the device
      *
      * @return  self
-     */ 
+     */
     public function setUuid(string $uuid)
     {
         $this->uuid = $uuid;

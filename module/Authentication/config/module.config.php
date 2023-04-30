@@ -62,13 +62,15 @@ return [
             'api-auth' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/api[/:action[/:id]]',
+                    'route'    => '/auth[/:interface[/:action[/:id]]]',
                     'constraints' => array(
+                        'interface' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id' => '[a-zA-Z0-9]*'
                     ),
                     'defaults' => [
                         'controller' => ApiauthenticateController::class,
+                        "interface" => "api",
                         'action'     => 'login',
                     ],
                 ],

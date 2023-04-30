@@ -48,7 +48,7 @@ class JWTIssuer
             ->issuedBy($this->systemConfig["jwt"]["url"])
             ->permittedFor($data["aud"])
             ->identifiedBy($data["email"]) // device ID
-            ->relatedTo($data["email"])->withClaim("uid", $data["uid"])
+            ->relatedTo($data["email"])->withClaim("coded", $data)
             ->issuedAt($now)
             ->expiresAt($now->modify($this->systemConfig["jwt"]["expiry"]))
             ->getToken($this->config->signer(), $this->config->signingKey());

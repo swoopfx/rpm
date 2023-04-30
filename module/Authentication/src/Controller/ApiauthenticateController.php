@@ -49,8 +49,8 @@ class ApiauthenticateController extends AbstractActionController
     }
 
     /**
-     * Undocumented function
-     * @OA\POST( path="/api/login", tags={"Authentication"}, description="The  authenticate connecting entities.You need to be authenticated and be authorized to access the rest endpoints for integration. To authenticate, need to make a request for a token.This token is then added to the authorization header of the request you send to the api endpoint. the granst_type must be client_credentials",
+     * This API is used to authenticate the user 
+     * @OA\POST( path="/auth/api/login", tags={"Authentication"}, description="The  authenticate connecting entities.You need to be authenticated and be authorized to access the rest endpoints for integration. To authenticate, need to make a request for a token.This token is then added to the authorization header of the request you send to the api endpoint. the granst_type must be client_credentials",
      * @OA\RequestBody(
      * @OA\MediaType(
      * mediaType="application/json",
@@ -94,7 +94,7 @@ class ApiauthenticateController extends AbstractActionController
                     "schema" => "Bearer",
                     "expires_in" => $authResponse["expire"],
                     "token" => $authResponse["token"],
-                    "id_token" => $authResponse["refresh_uid"],
+                    "id_token" => $authResponse["refresh_uid"], // luhn algorithm value
                     "device_id" => $authResponse["aud"],
                 ]);
             } catch (\Throwable $th) {
@@ -115,8 +115,9 @@ class ApiauthenticateController extends AbstractActionController
 
 
     /**
-     * Undocumented function
-     * @OA\POST( path="/api/register", tags={"Authentication"}, description="This registeres a user",
+     * Registers a Customer 
+     * 
+     * @OA\POST( path="/auth/api/register", tags={"Authentication"}, description="This registeres a user",
      * @OA\RequestBody(
      * @OA\MediaType(
      * mediaType="application/json",
@@ -127,7 +128,7 @@ class ApiauthenticateController extends AbstractActionController
      * @OA\Property(property="password", type="string", example="Oluwaseun1"),
      * @OA\Property(property="confirm_password", type="string", example="Oluwaseun1"),
      * @OA\Property(property="userIp", type="string", example="127.0.0.1"),
-     * @OA\Property(property="device_type", type="string", example="mobile or web or others" description="<p><ul><li>web</li> <li>mobile</li> <li>others</li></ul></p> "),
+     * @OA\Property(property="device_type", type="string", example="mobile or web or others", description="<p><ul><li>web</li> <li>mobile</li> <li>others</li></ul></p> "),
      * )
      * ),
      * ),
@@ -138,6 +139,8 @@ class ApiauthenticateController extends AbstractActionController
      *
      * @return void
      */
+
+
     public function registerAction()
     {
         $jsonModel = new JsonModel();
@@ -155,12 +158,12 @@ class ApiauthenticateController extends AbstractActionController
                 if (!is_null($responseData)) {
                     $response->setStatusCode(201);
                     $jsonModel->setVariables([
-                        "success"=>true,
-                        "data"=>[
-                            "fullname"=>$responseData["fullname"],
-                            "email"=>$responseData["email"],
+                        "success" => true,
+                        "data" => [
+                            "fullname" => $responseData["fullname"],
+                            "email" => $responseData["email"],
                         ],
-                        "description"=>"Successfully Created {$responseData['fullname']},  profile, please vist Email to confirm email"
+                        "description" => "Successfully Created {$responseData['fullname']},  profile, please vist Email to confirm email"
                     ]);
                 }
             } catch (\Throwable $th) {
@@ -170,7 +173,7 @@ class ApiauthenticateController extends AbstractActionController
                     "description" => $th->getMessage(),
                     // "errors" => $
                 ]);
-               
+
                 $response->setStatusCode(400);
             }
         }
@@ -178,6 +181,26 @@ class ApiauthenticateController extends AbstractActionController
         return $jsonModel;
     }
 
+    /**
+     * This API is used to verity users email
+     * @OA\POST( path="/auth/api/verify", tags={"Authentication"}, description="Verify user Email",
+     * @OA\RequestBody(
+     * @OA\MediaType(
+     * mediaType="application/json",
+     * @OA\Schema(required={"code"},
+     * @OA\Property(property="username", type="string", example="ezekiel_a@yahoo.com or 07089898989"),
+     * 
+     * 
+     * )
+     * ),
+     * ),
+     * @OA\Response(response="200", description="Success"),
+     * @OA\Response(response="401", description="Not Authorized"),
+     * @OA\Response(response="403", description="Not permitted")
+     * )
+     *
+     * @return void
+     */
     public function verifyAction()
     {
         $jsonModel = new JsonModel();
@@ -223,13 +246,43 @@ class ApiauthenticateController extends AbstractActionController
         return $jsonModel;
     }
 
-    // public function 
+   
 
 
+    /**
+     * This action refreshes the token 
+     * @OA\POST( path="/auth/api/refresh-token", tags={"Authentication"}, description="Verify user Email",
+     * @OA\RequestBody(
+     * @OA\MediaType(
+     * mediaType="application/json",
+     * @OA\Schema(required={"id_"},
+     * @OA\Property(property="username", type="string", example="ezekiel_a@yahoo.com or 07089898989"),
+     * 
+     * 
+     * )
+     * ),
+     * ),
+     * @OA\Response(response="200", description="Success"),
+     * @OA\Response(response="401", description="Not Authorized"),
+     * @OA\Response(response="403", description="Not permitted")
+     * )
+     *
+     * @return void
+     */
     public function refreshTokenAction()
     {
         $jsonModel = new JsonModel();
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            // retrieve cookie refresh token from header 
+            // Verify Cooki from 
+        }
         return $jsonModel;
+    }
+
+
+    public function resetPaswordAction()
+    {
     }
 
     // /**
@@ -256,6 +309,8 @@ class ApiauthenticateController extends AbstractActionController
 
     public function logoutAction()
     {
+        $jsonModel = new JsonModel();
+        return $jsonModel;
     }
 
     /**

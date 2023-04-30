@@ -70,7 +70,7 @@ class CustomerController extends AbstractActionController
 
     public function getRequestWasteCollectionAction(){
         $jsonModel = new JsonModel();
-        return
+        // return
     }
 
    

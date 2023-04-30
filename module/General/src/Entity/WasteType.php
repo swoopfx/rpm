@@ -1,8 +1,7 @@
 <?php
-
 namespace General\Entity;
 
-use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Type of waste, PLastic, bottle, metal, Paper, compost

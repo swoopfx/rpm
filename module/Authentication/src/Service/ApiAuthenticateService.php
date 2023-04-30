@@ -87,7 +87,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
 
                     return $matches[1];
-                }else{
+                } else {
                     throw new Exception("Improper Bearer Config");
                 }
             }
@@ -98,7 +98,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
     public function authenticate()
     {
         $post = $this->post;
-        if($post == NULL){
+        if ($post == NULL) {
             throw new Exception("Set Post function needs to be initiated");
         }
         $inputFilter = $this->loginInputFilter;
@@ -121,7 +121,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
 
             if (count($user) == 0) {
 
-                throw new \Exception(Json::encode("Invalid Credentials"));
+                throw new \Exception("Invalid Credentials");
             }
 
             /**
@@ -130,10 +130,10 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
             $user = $user[0];
 
             if (!$user->getEmailConfirmed() == 1) {
-                throw new \Exception(Json::encode("You are yet to confirm your email! please go to the registered email to confirm your account"));
+                throw new \Exception("You are yet to confirm your email! please go to the registered email to confirm your account");
             }
             if ($user->getState()->getId() != 1) {
-                throw new \Exception(Json::encode("Your account is disabled"));
+                throw new \Exception("Your account is disabled");
             }
 
             $adapter->setIdentity($user->getUsername());
@@ -148,14 +148,16 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 // generate jwt token
                 $refresh_uid = uniqid("rt", true); // token to refresh the access token
                 $data = [
-                    "uid"=>$user->getId(),
-                    "aud"=> $uuid,
-                    "email"=>$phoneOrEmail
+                    "uuid" => $user->getUuid(),
+                    "uid" => $user->getUid(),
+                    "aud" => $uuid,
+                    "email" => $phoneOrEmail,
+                    "role" => $user->getRole()->getId(),
                 ];
                 $data["token"] = $this->jwtIssuer->issueToken($data)->toString();
                 $data["userid"] = $user->getId();
                 $data["expire"] = 1800; // fix expiry date
-                $data ["u_uid"] = $user->getUid();
+                $data["u_uid"] = $user->getUid();
                 $data["refresh_uid"] = $refresh_uid;
 
                 // Generate refresh token
@@ -173,7 +175,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
                 $cookie = new SetCookie(self::COOKIE_NAME);
 
                 $cookie->setValue($refreshToken);
-                $cookie->setExpires(60*60*24*30);
+                $cookie->setExpires(60 * 60 * 24 * 30);
                 $cookie->setPath("/");
                 $cookie->setSecure(true);
                 $cookie->setHttponly(true);
@@ -257,7 +259,7 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
 
     public function refreshToken()
     {
-        if(!$this->hasCookie()){
+        if (!$this->hasCookie()) {
             // throw new RuntimeException("Http Cookie Absent");
 
             // ceck for refresh uid
@@ -273,8 +275,6 @@ class ApiAuthenticateService implements AuthenticationServiceInterface
          *
          * 
          */
-        
-        
     }
 
 
